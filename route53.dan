@@ -1,0 +1,20 @@
+resource "aws_route53_zone" "toto" {
+  name = "toto.com"
+}
+
+module "dns_records" {
+  source = "terraformdns/route53-recordsets/aws"
+
+  route53_zone = aws_route53_zone.toto
+  recordsets = [
+    {
+      name = "www"
+      type = "A"
+      ttl  = 3600
+      records = [
+        "192.0.2.56",
+      ]
+    },
+
+  ]
+}
