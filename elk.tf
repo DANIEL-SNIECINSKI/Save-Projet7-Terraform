@@ -1,7 +1,30 @@
-resource "aws_elasticsearch_domain" "projet10" {
-  domain_name           = "projet10"
+resource "aws_security_group" "opensearch_sg" {
+  name        = "opensearch_sg"
+  description = "Allow access to Elasticsearch"
+  vpc_id = aws_vpc.vpc_main.id
+
+ 
+  ingress {
+    description = "Allow All"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+}
+
+resource "aws_elasticsearch_domain" "opensearch" {
+  domain_name           = "opensearch"
   elasticsearch_version = "OpenSearch_1.0"
-  
+
   cluster_config {
     dedicated_master_enabled = false
 
@@ -30,7 +53,13 @@ resource "aws_elasticsearch_domain" "projet10" {
     volume_size = 20
   }
 
-  
+  vpc_options {
+  #  security_group_ids = [aws_security_group.opensearch_sg.id]
+    security_group_ids = [aws_security_group.webservers.id]
+  #  subnet_ids = [var.subnet_a, var.subnet_b, var.subnet_c]
+    subnet_ids = [aws_subnet.webservers-a.id]
+  }
+
   access_policies = jsonencode({
     Version = "2012-10-17"
     Statement = [
