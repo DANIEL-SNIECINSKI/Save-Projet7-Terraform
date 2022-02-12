@@ -26,6 +26,7 @@ resource "aws_security_group" "opensearch_sg" {
 resource "aws_elasticsearch_domain" "opensearch" {
   domain_name           = "opensearch"
   elasticsearch_version = "OpenSearch_1.1"
+#  elasticsearch_version = "7.10" 
 
   cluster_config {
     dedicated_master_enabled = false
